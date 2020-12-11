@@ -21,8 +21,8 @@ pub fn image_example() {
     // A redundant loop to demonstrate reading image data
     for x in 0..imgx {
         for y in 0..imgy {
-            let cx = y as f32 * scalex - 1.5;
-            let cy = x as f32 * scaley - 1.5;
+            let cx = y as f32 * scalex - 3.5;
+            let cy = x as f32 * scaley - 2.5;
 
             let c = num_complex::Complex::new(-0.4, 0.6);
             let mut z = num_complex::Complex::new(cx, cy);

@@ -1,5 +1,6 @@
 mod min_winit_example;
 mod image_example;
+mod minigrep;
 
 use std::io::{stdin};
 use rand::Rng;
@@ -7,7 +8,8 @@ use std::cmp::Ordering;
 
 fn main() {
     // min_winit_example::draw_window();
-    image_example::image_example();
+    // image_example::image_example();
+    minigrep::minigrep();
 }
 
 fn guessing() {
