@@ -8,6 +8,8 @@ use winit::event::{Event, VirtualKeyCode};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::WindowBuilder;
 use winit_input_helper::WinitInputHelper;
+use rand::Rng;
+use crate::rand_color;
 
 const WIDTH: u32 = 320;
 const HEIGHT: u32 = 240;
@@ -19,6 +21,8 @@ struct World {
     box_y: i16,
     velocity_x: i16,
     velocity_y: i16,
+    bg_color: [u8;4],
+    box_color: [u8;4],
 }
 
 pub fn draw_window() -> Result<(), Error> {
@@ -64,13 +68,17 @@ pub fn draw_window() -> Result<(), Error> {
                 return;
             }
 
+            if input.key_pressed(VirtualKeyCode::Space) {
+                world.randomize();
+            }
+
             // Resize the window
             if let Some(size) = input.window_resized() {
                 pixels.resize(size.width, size.height);
             }
 
             // Update internal state and request a redraw
-            world.update();
+            // world.update();
             window.request_redraw();
         }
     });
@@ -82,8 +90,10 @@ impl World {
         Self {
             box_x: 24,
             box_y: 16,
-            velocity_x: 2,
-            velocity_y: 2,
+            velocity_x: 1,
+            velocity_y: 1,
+            bg_color: rand_color(),
+            box_color: rand_color(),
         }
     }
 
@@ -100,6 +110,13 @@ impl World {
         self.box_y += self.velocity_y;
     }
 
+    fn randomize(&mut self) {
+        self.box_x = rand::thread_rng().gen_range(0, WIDTH as i16 - BOX_SIZE);
+        self.box_y = rand::thread_rng().gen_range(0, HEIGHT as i16 - BOX_SIZE);
+        self.bg_color = rand_color();
+        self.box_color = rand_color();
+    }
+
     /// Draw the `World` state to the frame buffer.
     ///
     /// Assumes the default texture format: [`wgpu::TextureFormat::Rgba8UnormSrgb`]
@@ -114,12 +131,23 @@ impl World {
                 && y < self.box_y + BOX_SIZE;
 
             let rgba = if inside_the_box {
-                [0x5e, 0x48, 0xe8, 0xff]
+                //[0x5e, 0x48, 0xe8, 255]
+                self.box_color
             } else {
-                [0x48, 0xb2, 0xe8, 0xff]
+                //[0x48, 0xb2, 0xe8, 55]
+                self.bg_color
             };
 
             pixel.copy_from_slice(&rgba);
         }
     }
+    
+    // jkdf
+    fn rand_color() -> [u8; 4] {
+        let r = rand::thread_rng().gen_range(0, 255) as u8;
+        let g = rand::thread_rng().gen_range(0, 255) as u8;
+        let b = rand::thread_rng().gen_range(0, 255) as u8;
+        [r, g, b, 255]
+    }
+
 }
